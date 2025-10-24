@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"thunderbirdauth/server/utils"
 )
 
 type UserModel struct {
@@ -55,11 +56,16 @@ func createTable(database *sql.DB) error {
 
 func (u *UserModel) Create(user *UserCredential) (*UserBase, error) {
 	log.Println("Creating user...")
+	hashpassword, err := utils.HashPassword(user.Password)
+	if err != nil {
+		return nil, err
+	}
+
 	database := u.DB
-	_, err := database.Exec(
+	_, err = database.Exec(
 		"INSERT INTO users (username, password) VALUES (?, ?)",
 		user.Username,
-		user.Password,
+		hashpassword,
 	)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.username" {
