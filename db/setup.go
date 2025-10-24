@@ -8,6 +8,23 @@ import (
 )
 
 func Initialise(dbPath string) (*sql.DB, error) {
+	log.Println("Initialising Database...")
+	db, err := connectDatabase(dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("Database Error: %v", err)
+	}
+
+	err = createTable(db)
+	if err != nil {
+		return nil, fmt.Errorf("Database Error: %v", err)
+	}
+
+	log.Println("Database setup complete.")
+	return db, nil
+}
+
+func connectDatabase(dbPath string) (*sql.DB, error) {
+	log.Println("Connecting to ", dbPath)
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database: %v", err)
@@ -17,17 +34,12 @@ func Initialise(dbPath string) (*sql.DB, error) {
 	}
 
 	log.Println("Connected to SQLite database:", dbPath)
-
-	err = CreateTable(db)
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println("Table 'users' found in database")
 	return db, nil
 }
 
-func CreateTable(db *sql.DB) error {
+func createTable(db *sql.DB) error {
+	log.Println("Creating Table 'users' in database")
+
 	createTableQuery := `
 	CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,6 +53,8 @@ func CreateTable(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf("failed to create table: %v", err)
 	}
+
+	log.Println("Table 'users' in database")
 
 	return nil
 }
