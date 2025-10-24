@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"thunderbirdauth/server/models"
 )
 
 type RegisterRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	models.UserCredential
 }
 
 func (u *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +33,11 @@ func (u *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//insert user
-	database := u.App.GetDB()
-	_, err = database.Exec("INSERT INTO users (username, password) VALUES (?, ?)", requestBody.Username, requestBody.Password)
+	userModel := u.UserModel
+	_, err = userModel.Create(&requestBody.UserCredential)
 	if err != nil {
-		log.Printf("Username already exists")
-		http.Error(w, "Username already exists", http.StatusConflict)
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusConflict)
 		return
 	}
 

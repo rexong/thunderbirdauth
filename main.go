@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"thunderbirdauth/handlers"
 	"thunderbirdauth/server"
+	"thunderbirdauth/server/handlers"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -14,10 +14,10 @@ const DB_PATH = "db/app.db"
 const PORT = 8080
 
 func main() {
-	app := server.InitialiseApp(DB_PATH)
+	app, userModel := server.InitialiseApp(DB_PATH)
 	defer app.Close()
 
-	userhandler := &handlers.UserHandler{App: app}
+	userhandler := &handlers.UserHandler{UserModel: userModel}
 
 	http.HandleFunc("/register", userhandler.Register)
 

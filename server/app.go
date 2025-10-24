@@ -4,28 +4,28 @@ import (
 	"database/sql"
 	"log"
 	"thunderbirdauth/db"
+	"thunderbirdauth/server/models"
 )
 
 type App struct {
 	DB *sql.DB
 }
 
-type AppInterface interface {
-	GetDB() *sql.DB
-}
-
-func InitialiseApp(database_path string) *App {
+func InitialiseApp(database_path string) (*App, *models.UserModel) {
 	log.Println("Initialising App...")
-	database, err := db.Initialise(database_path)
+	database, err := db.Connect(database_path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println("App Initialised")
-	return &App{DB: database}
-}
 
-func (a *App) GetDB() *sql.DB {
-	return a.DB
+	userModel, err := models.InitialiseUserModel(database)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("App Initialised")
+	app := &App{DB: database}
+	return app, userModel
 }
 
 func (a *App) Close() {
