@@ -20,6 +20,7 @@ func main() {
 	userhandler := &handlers.UserHandler{UserModel: userModel}
 
 	http.HandleFunc("/register", userhandler.Register)
+	http.HandleFunc("/secret", userhandler.AuthMiddleware("Restricted Area", handlers.ProtectedHandler))
 
 	addr := fmt.Sprintf(":%d", PORT)
 	err := http.ListenAndServe(addr, nil)
