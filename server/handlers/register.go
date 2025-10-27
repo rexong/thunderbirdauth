@@ -32,7 +32,6 @@ func (u *UserHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//insert user
 	userModel := u.UserModel
 	_, err = userModel.Create(&requestBody.UserCredential)
 	if err != nil {

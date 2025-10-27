@@ -79,3 +79,23 @@ func (u *UserModel) Create(user *UserCredential) (*UserBase, error) {
 		Username: user.Username,
 	}, nil
 }
+
+func (u *UserModel) Verify(user *UserCredential) (*UserBase, bool) {
+	log.Println("Verifing User...")
+	var existingUser UserCredential
+	database := u.DB
+	query := "SELECT username, password FROM users WHERE username=$1"
+
+	log.Println(user.Username)
+	err := database.QueryRow(query, user.Username).Scan(&existingUser.Username, &existingUser.Password)
+	if err != nil {
+		log.Println("User does not exist.")
+		return nil, false
+	}
+	ok := utils.CheckPasswordHash(user.Password, existingUser.Password)
+	if !ok {
+		log.Println("Incorrect Password")
+		return nil, false
+	}
+	return &existingUser.UserBase, true
+}
