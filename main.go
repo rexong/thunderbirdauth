@@ -10,8 +10,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const DB_PATH = "db/app.db"
-const PORT = 8080
+const (
+	DB_PATH = "db/app.db"
+	PORT    = 8080
+)
 
 func main() {
 	app, userModel := server.InitialiseApp(DB_PATH)
@@ -20,7 +22,8 @@ func main() {
 	userhandler := &handlers.UserHandler{UserModel: userModel}
 
 	http.HandleFunc("/register", userhandler.Register)
-	http.HandleFunc("/secret", userhandler.AuthMiddleware("Restricted Area", handlers.ProtectedHandler))
+	http.HandleFunc("/auth", userhandler.Authenticate(app.SM))
+	http.HandleFunc("/login", userhandler.Login(app.SM))
 
 	addr := fmt.Sprintf(":%d", PORT)
 	err := http.ListenAndServe(addr, nil)

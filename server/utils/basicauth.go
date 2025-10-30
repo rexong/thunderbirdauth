@@ -6,12 +6,12 @@ import (
 )
 
 const (
-	username = "home"
-	password = "1234"
+	BasicAuthUsername = "home"
+	BasicAuthPassword = "1234"
 )
 
 func BasicAuthHeader() string {
-	credentials := fmt.Sprintf("%s:%s", username, password)
+	credentials := fmt.Sprintf("%s:%s", BasicAuthUsername, BasicAuthPassword)
 	encodedCredentials := base64.StdEncoding.EncodeToString([]byte(credentials))
 	return fmt.Sprintf("Basic %s", encodedCredentials)
 }

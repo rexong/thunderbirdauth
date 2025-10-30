@@ -5,10 +5,12 @@ import (
 	"log"
 	"thunderbirdauth/db"
 	"thunderbirdauth/server/models"
+	"thunderbirdauth/server/utils"
 )
 
 type App struct {
 	DB *sql.DB
+	SM *utils.SessionManager
 }
 
 func InitialiseApp(database_path string) (*App, *models.UserModel) {
@@ -23,8 +25,13 @@ func InitialiseApp(database_path string) (*App, *models.UserModel) {
 		log.Fatal(err)
 	}
 
+	sessionManager := utils.InitialiseSessionManager()
+
 	log.Println("App Initialised")
-	app := &App{DB: database}
+	app := &App{
+		DB: database,
+		SM: sessionManager,
+	}
 	return app, userModel
 }
 
