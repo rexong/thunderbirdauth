@@ -1,0 +1,38 @@
+services:
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    ports:
+      - "8989:8989"
+    networks:
+      - appnet
+
+  idp:
+    image: thunderbirdauth
+    container_name: idp
+    ports:
+      - "8080:8080"
+    networks:
+      - appnet
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./index.html:/usr/share/nginx/html/index.html
+    ports:
+      - "80:80"
+    depends_on:
+      - sonarr
+      - idp
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
