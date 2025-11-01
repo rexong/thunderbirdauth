@@ -22,7 +22,8 @@ func main() {
 	userhandler := &handlers.UserHandler{UserModel: userModel}
 
 	http.HandleFunc("/register", userhandler.Register)
-	http.HandleFunc("/auth", userhandler.Authenticate(app.SM))
+	http.HandleFunc("/auth", userhandler.Authenticate(app.SM, false))
+	http.HandleFunc("/auth/basic", userhandler.Authenticate(app.SM, true))
 	http.HandleFunc("/login", userhandler.Login(app.SM))
 
 	addr := fmt.Sprintf(":%d", PORT)

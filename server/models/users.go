@@ -2,10 +2,13 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 	"thunderbirdauth/server/utils"
 )
+
+var ErrUsernameExists = errors.New("Username already exists")
 
 type UserModel struct {
 	DB *sql.DB
@@ -28,8 +31,14 @@ func InitialiseUserModel(database *sql.DB) (*UserModel, error) {
 		return nil, err
 	}
 
+	userModel := &UserModel{DB: database}
 	log.Println("User Model Initialised")
-	return &UserModel{DB: database}, nil
+	err = seedUser(userModel)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("User Table Seeded")
+	return userModel, nil
 }
 
 func createTable(database *sql.DB) error {
@@ -49,9 +58,24 @@ func createTable(database *sql.DB) error {
 	}
 
 	log.Println("Table 'users' in database")
-
 	return nil
+}
 
+func seedUser(userModel *UserModel) error {
+	user := &UserCredential{
+		UserBase: UserBase{
+			Username: "alice",
+		},
+		Password: "1234",
+	}
+	_, err := userModel.Create(user)
+	if err != nil {
+		if errors.Is(err, ErrUsernameExists) {
+			return nil
+		}
+		return err
+	}
+	return nil
 }
 
 func (u *UserModel) Create(user *UserCredential) (*UserBase, error) {
@@ -69,7 +93,7 @@ func (u *UserModel) Create(user *UserCredential) (*UserBase, error) {
 	)
 	if err != nil {
 		if err.Error() == "UNIQUE constraint failed: users.username" {
-			return nil, fmt.Errorf("Username already exists")
+			return nil, ErrUsernameExists
 		}
 		return nil, fmt.Errorf("Database error: %v", err)
 	}
