@@ -14,16 +14,14 @@ var loginHTML string
 
 var loginTpl = template.Must(template.New("login").Parse(loginHTML))
 
+type tplData struct {
+	Error string
+}
+
 func (u *UserHandler) Login(sm *utils.SessionManager) http.HandlerFunc {
 	handleGet := func(w http.ResponseWriter) {
-		data := struct {
-			Error         string
-			ProxyUsername string
-			ProxyPassword string
-		}{
-			Error:         "",
-			ProxyUsername: utils.BasicAuthUsername,
-			ProxyPassword: utils.BasicAuthPassword,
+		data := tplData{
+			Error: "",
 		}
 		loginTpl.Execute(w, data)
 	}
@@ -43,14 +41,8 @@ func (u *UserHandler) Login(sm *utils.SessionManager) http.HandlerFunc {
 		if !ok {
 			log.Printf("Authentication failed for user: %s", username)
 			w.WriteHeader(http.StatusUnauthorized)
-			data := struct {
-				Error         string
-				ProxyUsername string
-				ProxyPassword string
-			}{
-				Error:         "Invalid Credentials",
-				ProxyUsername: utils.BasicAuthUsername,
-				ProxyPassword: utils.BasicAuthPassword,
+			data := tplData{
+				Error: "Invalid Credentials",
 			}
 			loginTpl.Execute(w, data)
 			return
@@ -59,14 +51,8 @@ func (u *UserHandler) Login(sm *utils.SessionManager) http.HandlerFunc {
 		if redirectURL == "" {
 			log.Println("No redirect url provided")
 			w.WriteHeader(http.StatusBadRequest)
-			data := struct {
-				Error         string
-				ProxyUsername string
-				ProxyPassword string
-			}{
-				Error:         "No Redirect URL",
-				ProxyUsername: utils.BasicAuthUsername,
-				ProxyPassword: utils.BasicAuthPassword,
+			data := tplData{
+				Error: "No Redirect URL",
 			}
 			loginTpl.Execute(w, data)
 			return
