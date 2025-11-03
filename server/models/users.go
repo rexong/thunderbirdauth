@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"os"
 	"thunderbirdauth/server/utils"
 )
 
@@ -33,6 +34,10 @@ func InitialiseUserModel(database *sql.DB) (*UserModel, error) {
 
 	userModel := &UserModel{DB: database}
 	log.Println("User Model Initialised")
+	if os.Getenv("ENV") == utils.PROD_ENV {
+		return userModel, nil
+	}
+	log.Println("In DEV environment, seeding user...")
 	err = seedUser(userModel)
 	if err != nil {
 		return nil, err
