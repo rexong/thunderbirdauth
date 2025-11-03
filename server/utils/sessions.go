@@ -16,6 +16,7 @@ type SessionManager struct {
 
 // Initialise the Session Manager
 func InitialiseSessionManager() *SessionManager {
+	log.Println("Initialising Session Manager")
 	return &SessionManager{
 		Sessions: make(map[string]time.Time),
 	}
