@@ -3,12 +3,11 @@ package utils
 import (
 	"encoding/base64"
 	"fmt"
+	"os"
 )
 
-const (
-	BasicAuthUsername = "home"
-	BasicAuthPassword = "1234"
-)
+var BasicAuthUsername = os.Getenv("BASIC_USERNAME")
+var BasicAuthPassword = os.Getenv("BASIC_PASSWORD")
 
 func BasicAuthHeader() string {
 	credentials := fmt.Sprintf("%s:%s", BasicAuthUsername, BasicAuthPassword)

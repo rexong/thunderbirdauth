@@ -16,5 +16,9 @@ RUN apk add --no-cache sqlite
 COPY --from=builder /app/thunderbirdauth /thunderbirdauth
 
 RUN mkdir -p /db
+ENV ENV=dev
+ENV BASIC_USERNAME=home
+ENV BASIC_PASSWORD=1234
+
 CMD ["/thunderbirdauth"]
 
