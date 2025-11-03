@@ -27,6 +27,7 @@ func (u *UserHandler) Authenticate(sm *utils.SessionManager, isBasic bool) http.
 		}
 		log.Println("Token Verified")
 		if isBasic {
+			log.Println("Adding Basic Authroization Request Header...")
 			w.Header().Set("Authorization", utils.BasicAuthHeader())
 		}
 		w.WriteHeader(http.StatusOK)

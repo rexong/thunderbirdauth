@@ -29,6 +29,7 @@ func getExpiryTime() time.Time {
 // Issue Session Token based on Unix Nano Time.
 // Token is stored with an expiry time in SessionManager.
 func (sm *SessionManager) IssueSessionToken() string {
+	log.Println("Issuing Session Token...")
 	sessionToken := fmt.Sprintf("%d", time.Now().UnixNano())
 	expiryTime := getExpiryTime()
 
@@ -36,11 +37,13 @@ func (sm *SessionManager) IssueSessionToken() string {
 	sm.Sessions[sessionToken] = expiryTime
 	sm.mu.Unlock()
 
+	log.Println("Session Token Created")
 	return sessionToken
 }
 
 // Verify Session Token against tokens in SessionManager.
 func (sm *SessionManager) VerifySessionToken(sessionToken string) bool {
+	log.Println("Verifying Session Token...")
 	sm.mu.RLock()
 	expiry, exists := sm.Sessions[sessionToken]
 	sm.mu.RUnlock()
@@ -59,10 +62,11 @@ func (sm *SessionManager) VerifySessionToken(sessionToken string) bool {
 		sm.mu.Unlock()
 		return false
 	}
-
+	log.Println("Session Token Valid, Updating Expiry...")
 	newExpiry := getExpiryTime()
 	sm.mu.Lock()
 	sm.Sessions[sessionToken] = newExpiry
 	sm.mu.Unlock()
+	log.Println("Session Token Expiry Updated")
 	return true
 }

@@ -29,11 +29,10 @@ func (u *UserHandler) Login(sm *utils.SessionManager) http.HandlerFunc {
 	}
 
 	handlePost := func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Retrieving username, password and redirect url...")
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 		redirectURL := r.URL.Query().Get("redirect_url")
-		log.Println("URL: ", r.URL)
-		log.Println("Redirect URL: ", redirectURL)
 		userModel := u.UserModel
 		userCredential := &models.UserCredential{
 			UserBase: models.UserBase{Username: username},
