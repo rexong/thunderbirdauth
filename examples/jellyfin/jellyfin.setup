@@ -1,0 +1,18 @@
+1. Install Jellyfin's LDAP-Auth plugin
+- Login to jellyfin as admin user
+- Navigate `Dashboard` > `Plugins` > `All` > `Search` LDAP Authentication
+- Install LDAP Authentication
+- Restart Jellyfin Application
+
+2. Configure LDAP-Auth plugin
+- Navigate `Dashboard` > `Plugins` > `Installed` > `LDAP-Authentication` > `Settings`
+- Fill in the form:
+   - LDAP Server: Docker Container Name (if in same docker network) / local machine ip address
+   - LDAP Port
+   - Secure LDP: Unchecked
+   - LDAP Bind User: `cn=admin,dc=example,dc=com`
+   - LDAP Bind User Password: <Admin Password>
+   - LDAP Base DN for searches: `dc=example,dc=com`
+   - Save and Test LDAP Server Settings
+   - LDAP Search Filter: `(&(objectClass=person)(uid=myuser))`
+   - Save and Test LDAP Filter Settings
