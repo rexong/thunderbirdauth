@@ -1,2 +1,6 @@
 *.db
 .env
+
+examples/jellyfin/config
+examples/jellyfin/cache
+ldap-data
