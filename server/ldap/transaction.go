@@ -24,7 +24,7 @@ func findEntryByUIDTransaction(targetUid string, foundEntry **LdapEntry) func(tx
 				log.Printf("Error retrieving value for %s: %v", string(key), err)
 				continue
 			}
-			entry, err := UnmarshalEntry(entryData)
+			entry, err := unmarshalEntry(entryData)
 			if err != nil {
 				log.Printf("Error unmarshalling entry %s: %v", string(key), err)
 				continue

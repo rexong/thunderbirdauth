@@ -2,6 +2,7 @@ package ldapserver
 
 import (
 	"encoding/json"
+	"fmt"
 	"slices"
 )
 
@@ -13,14 +14,25 @@ type LdapEntry struct {
 	ObjectClasses []string `json:"objectClasses"`
 }
 
-func (e *LdapEntry) Marshal() ([]byte, error) {
+func (e *LdapEntry) marshal() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-func UnmarshalEntry(data []byte) (*LdapEntry, error) {
+func unmarshalEntry(data []byte) (*LdapEntry, error) {
 	var entry LdapEntry
 	err := json.Unmarshal(data, &entry)
 	return &entry, err
+}
+
+func createEntry(uid, cn, userPassword string) LdapEntry {
+	entry := LdapEntry{
+		DN:            fmt.Sprintf("cn=%s,ou=users,dc=example,dc=com", cn),
+		UID:           uid,
+		CN:            cn,
+		UserPassword:  userPassword,
+		ObjectClasses: []string{"person"},
+	}
+	return entry
 }
 
 func (e *LdapEntry) containsObjectClass(objectClass string) bool {

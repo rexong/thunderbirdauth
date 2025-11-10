@@ -2,6 +2,7 @@ package ldapserver
 
 import (
 	"fmt"
+	"log"
 	"thunderbirdauth/server/utils"
 )
 
@@ -17,10 +18,12 @@ type Config struct {
 var config Config
 
 func loadConfig() {
+	log.Println("Loading LDAP Configuration...")
 	config.ServerIpAddr = utils.GetEnv("LDAP_SERVER_IP_ADDRESS", "0.0.0.0")
 	config.ServerPort = utils.GetEnv("LDAP_SERVER_PORT", "10389")
 	config.ListenAddr = fmt.Sprintf("%s:%s", config.ServerIpAddr, config.ServerPort)
 	config.StorePath = utils.GetEnv("LDAP_STORE_PATH", "./ldap-data")
 	config.AdminDN = utils.GetEnv("ADMIN_DN", "cn=admin,dc=example,dc=com")
 	config.AdminPassword = utils.GetEnv("ADMIN_PASSWORD", "adminPassword")
+	log.Println("LDAP Configuration Loaded")
 }

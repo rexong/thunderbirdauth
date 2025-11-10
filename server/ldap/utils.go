@@ -20,19 +20,20 @@ func getTargetUID(filter string) (string, error) {
 	return targetUID, nil
 }
 
-var (
-	adminUser = &LdapEntry{
+func createDefaultEntry() (*LdapEntry, *LdapEntry) {
+	adminUser := &LdapEntry{
 		DN:            config.AdminDN,
 		UID:           "admin",
 		CN:            "admin",
 		UserPassword:  config.AdminPassword,
 		ObjectClasses: []string{"person"},
 	}
-	user1 = &LdapEntry{
+	user1 := &LdapEntry{
 		DN:            "cn=myuser,ou=users,dc=example,dc=com",
 		UID:           "myuser",
 		CN:            "myuser",
 		UserPassword:  "mypassword",
 		ObjectClasses: []string{"person"},
 	}
-)
+	return adminUser, user1
+}

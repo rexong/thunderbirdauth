@@ -3,7 +3,6 @@ package ldapserver
 import (
 	"fmt"
 	"log"
-	"thunderbirdauth/server/utils"
 	"time"
 
 	badger "github.com/dgraph-io/badger/v4"
@@ -13,7 +12,7 @@ type Store struct {
 	DB *badger.DB
 }
 
-func NewStore(path string) (*Store, error) {
+func connectStore(path string) (*Store, error) {
 	log.Printf("LDAP Store: Creating New Store at %s...", path)
 	opts := badger.DefaultOptions(path)
 	opts.Logger = nil
@@ -34,12 +33,8 @@ func NewStore(path string) (*Store, error) {
 	}()
 
 	store := Store{DB: db}
-	if utils.ShouldSeed() {
-		seed(store)
-		log.Println("LDAP Store: Badger DB seeded")
-	}
-
-	log.Printf("LDAP Store: Store Created")
+	seed(store)
+	log.Printf("LDAP Store: Store Connected")
 	return &store, nil
 }
 
@@ -60,7 +55,7 @@ func (s *Store) Get(dn string) ([]byte, error) {
 func (s *Store) Set(entry *LdapEntry) error {
 	log.Printf("LDAP Store: Setting %s entry", entry.DN)
 	key := []byte(entry.DN)
-	entryData, err := entry.Marshal()
+	entryData, err := entry.marshal()
 	if err != nil {
 		log.Printf("LDAP Store: Unable to Set %s into Store", entry.DN)
 		return nil
@@ -80,6 +75,7 @@ func (s *Store) View(targetUID string) (*LdapEntry, error) {
 
 func seed(s Store) {
 	log.Println("Seeding mock data...")
+	adminUser, user1 := createDefaultEntry()
 	if err := s.Set(adminUser); err != nil {
 		log.Fatalf("Failed to save admin user: %v", err)
 	}

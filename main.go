@@ -7,15 +7,16 @@ import (
 	"os"
 	"thunderbirdauth/server"
 	"thunderbirdauth/server/handlers"
-	"thunderbirdauth/server/ldap"
+	ldapserver "thunderbirdauth/server/ldap"
+	"thunderbirdauth/server/utils"
 
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-const (
-	DB_PATH = "db/app.db"
-	PORT    = 8080
+var (
+	DB_PATH = utils.GetEnv("DB_PATH", "db/app.db")
+	PORT    = utils.GetEnv("PORT", "8080")
 )
 
 func main() {
@@ -27,19 +28,27 @@ func main() {
 	app, userModel := server.InitialiseApp(DB_PATH)
 	defer app.Close()
 
-	ldapserver.Start()
 	userhandler := &handlers.UserHandler{UserModel: userModel}
+
+	// Check for LDAP Store
+	if ldapserver.Manager.StoreExist() {
+		log.Println("LDAP Store Exist")
+		err := ldapserver.Manager.StartServer()
+		if err != nil {
+			log.Printf("Unable to Start LDAP Server: %v", err)
+			return
+		}
+	}
 
 	http.HandleFunc("/register", userhandler.Register)
 	http.HandleFunc("/auth", userhandler.Authenticate(app.SM, false))
 	http.HandleFunc("/auth/basic", userhandler.Authenticate(app.SM, true))
 	http.HandleFunc("/login", userhandler.Login(app.SM))
+	http.HandleFunc("/ldap", userhandler.ControlLdap)
 
-	addr := fmt.Sprintf(":%d", PORT)
-	err = http.ListenAndServe(addr, nil)
+	addr := fmt.Sprintf(":%s", PORT)
 	log.Println("Server listening to port", PORT)
-	if err != nil {
+	if err = http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal("Server Error:", err)
 	}
-	log.Println("Starting LDAP")
 }

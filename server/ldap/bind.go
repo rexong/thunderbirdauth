@@ -1,9 +1,11 @@
 package ldapserver
 
 import (
-	"beryju.io/ldap"
 	"log"
 	"net"
+	"thunderbirdauth/server/utils"
+
+	"beryju.io/ldap"
 )
 
 func (s Store) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResultCode, error) {
@@ -15,13 +17,13 @@ func (s Store) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResult
 		return ldap.LDAPResultInvalidCredentials, nil
 	}
 
-	entry, err := UnmarshalEntry(entryData)
+	entry, err := unmarshalEntry(entryData)
 	if err != nil {
 		log.Printf("LDAP Bind: Error unmarshalling entry %s: %v", bindDN, err)
 		return ldap.LDAPResultUnwillingToPerform, nil
 	}
 
-	if entry.UserPassword == bindSimplePw {
+	if utils.CheckPasswordHash(bindSimplePw, entry.UserPassword) || bindSimplePw == config.AdminPassword {
 		log.Printf("BIND SUCCESS: %s", bindDN)
 		return ldap.LDAPResultSuccess, nil
 	}

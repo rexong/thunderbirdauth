@@ -127,3 +127,31 @@ func (u *UserModel) Verify(user *UserCredential) (*UserBase, bool) {
 	}
 	return &existingUser.UserBase, true
 }
+
+func (u *UserModel) GetAll() []*UserCredential {
+	log.Println("Get All Users...")
+	query := "SELECT username, password FROM users"
+	database := u.DB
+	rows, err := database.Query(query)
+	if err != nil {
+		log.Printf("query failed: %v", err)
+		return nil
+	}
+	defer rows.Close()
+	var users []*UserCredential
+
+	for rows.Next() {
+		var u UserCredential
+		if err := rows.Scan(&u.Username, &u.Password); err != nil {
+			log.Printf("Error scanning row: %v", err)
+			continue
+		}
+		users = append(users, &u)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Printf("row iteration failed: %v", err)
+		return nil
+	}
+	return users
+}
