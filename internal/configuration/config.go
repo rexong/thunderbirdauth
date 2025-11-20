@@ -5,7 +5,8 @@ import (
 )
 
 type Config struct {
-	AppConfig AppConfiguration
+	AppConfig   AppConfiguration
+	BasicConfig BasicConfiguration
 }
 
 type Configurer interface {
@@ -15,7 +16,12 @@ type Configurer interface {
 func Init() Config {
 	var appConfig AppConfiguration
 	appConfig.load()
-	config := Config{AppConfig: appConfig}
+	var basicConfig BasicConfiguration
+	basicConfig.load()
+	config := Config{
+		AppConfig:   appConfig,
+		BasicConfig: basicConfig,
+	}
 
 	return config
 }

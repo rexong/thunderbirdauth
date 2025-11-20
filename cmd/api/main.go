@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 
+	"github.com/go-playground/locales/ses"
+	"thunderbird.zap/idp/internal/auth/http"
 	"thunderbird.zap/idp/internal/configuration"
 	"thunderbird.zap/idp/internal/database"
 	"thunderbird.zap/idp/internal/store"
@@ -19,9 +21,11 @@ func main() {
 	defer db.Close()
 
 	store := store.NewStorage(db)
+	sessionManager := http.NewSessionManager()
 	app := &application{
-		config: config,
-		store:  store,
+		config:         config,
+		store:          store,
+		sessionManager: sessionManager,
 	}
 	mux := app.mount()
 

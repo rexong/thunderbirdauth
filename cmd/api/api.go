@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
+	auth "thunderbird.zap/idp/internal/auth/http"
 	"thunderbird.zap/idp/internal/configuration"
 	"thunderbird.zap/idp/internal/store"
 )
 
 type application struct {
-	config configuration.Config
-	store  store.Storage
+	config         configuration.Config
+	store          store.Storage
+	sessionManager auth.SessionManager
 }
 
 func welcome(w http.ResponseWriter, _ *http.Request) {
@@ -26,6 +28,8 @@ func (a *application) mount() http.Handler {
 	mux.HandleFunc("POST /users", a.storeUserHandler)
 	mux.HandleFunc("GET /users/login", a.loginUserHandlerFunc())
 	mux.HandleFunc("POST /users/login", a.verifyUserHandler)
+	mux.HandleFunc("GET /auth", a.Authenticate(false))
+	mux.HandleFunc("GET /auth/basic", a.Authenticate(true))
 	mux.HandleFunc("GET /", welcome)
 
 	return mux
