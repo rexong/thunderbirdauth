@@ -22,7 +22,8 @@ func welcome(w http.ResponseWriter, _ *http.Request) {
 func (a *application) mount() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("POST /users/", a.registerUserHandler)
+	mux.HandleFunc("GET /users", a.createUserHandler)
+	mux.HandleFunc("POST /users", a.storeUserHandler)
 	mux.HandleFunc("GET /", welcome)
 
 	return mux
