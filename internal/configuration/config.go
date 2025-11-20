@@ -1,17 +1,23 @@
-package config
+package configuration
 
 import (
 	"os"
 )
 
+type Config struct {
+	AppConfig AppConfiguration
+}
+
 type Configurer interface {
 	load()
 }
 
-func Init() AppConfiguration {
+func Init() Config {
 	var appConfig AppConfiguration
 	appConfig.load()
-	return appConfig
+	config := Config{AppConfig: appConfig}
+
+	return config
 }
 
 func getEnv(key string, defaultValue string) string {
