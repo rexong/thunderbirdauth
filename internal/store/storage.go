@@ -7,6 +7,8 @@ import (
 type Storage struct {
 	Users interface {
 		Create(username, password string) error
+		Verify(username, password string) (bool, error)
+		GetByUsername(username string) (*User, error)
 	}
 }
 

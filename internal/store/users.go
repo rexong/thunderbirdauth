@@ -26,8 +26,8 @@ func (p *password) hash(text string) error {
 	return nil
 }
 
-func (p *password) Compare(text string) error {
-	return bcrypt.CompareHashAndPassword(p.hashPassword, []byte(text))
+func (p *password) Compare(text string) bool {
+	return bcrypt.CompareHashAndPassword(p.hashPassword, []byte(text)) == nil
 }
 
 type UserStore struct {
@@ -47,4 +47,30 @@ func (s *UserStore) Create(username, password string) error {
 		return err
 	}
 	return nil
+}
+
+func (s *UserStore) GetByUsername(username string) (*User, error) {
+	type user struct {
+		username string
+		password string
+	}
+	var existingUser user
+	const query = "SELECT username, password FROM users WHERE username=?"
+	err := s.db.QueryRow(query, username).Scan(&existingUser.username, &existingUser.password)
+	if err != nil {
+		return nil, err
+	}
+	password := password{hashPassword: []byte(existingUser.password)}
+	return &User{
+		Username: existingUser.username,
+		Password: password,
+	}, nil
+}
+
+func (s *UserStore) Verify(username, password string) (bool, error) {
+	user, err := s.GetByUsername(username)
+	if err != nil {
+		return false, err
+	}
+	return user.Password.Compare(password), nil
 }
