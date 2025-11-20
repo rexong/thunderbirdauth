@@ -16,6 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Unable to Secure Database Connection: %v", err)
 	}
+	defer db.Close()
 
 	store := store.NewStorage(db)
 	app := &application{
