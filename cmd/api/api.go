@@ -6,20 +6,23 @@ import (
 	"net/http"
 
 	"thunderbird.zap/idp/internal/configuration"
+	"thunderbird.zap/idp/internal/store"
 )
 
 type application struct {
 	config configuration.Config
+	store  store.Storage
 }
 
-func welcome(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+func welcome(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusBadRequest)
 	fmt.Fprintln(w, "hello world")
 }
 
 func (a *application) mount() http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("POST /users/", a.registerUserHandler)
 	mux.HandleFunc("GET /", welcome)
 
 	return mux
