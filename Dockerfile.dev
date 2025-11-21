@@ -1,0 +1,21 @@
+FROM golang:1.25-alpine AS builder
+RUN apk add --no-cache gcc musl-dev sqlite
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY . .
+
+RUN chmod +x ./scripts/1_create_database.sh && /bin/sh ./scripts/1_create_database.sh
+RUN chmod +x ./scripts/2_apply_migrations.sh && /bin/sh ./scripts/2_apply_migrations.sh
+
+RUN go build -o /usr/local/bin/api ./cmd/api
+
+FROM alpine:latest
+COPY --from=builder /usr/local/bin/api /usr/local/bin/api
+
+COPY --from=builder app/data ./data
+
+ENTRYPOINT ["/usr/local/bin/api"]
+

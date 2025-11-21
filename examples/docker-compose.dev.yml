@@ -1,0 +1,37 @@
+services:
+  # sonarr:
+  #   build: ./sonarr
+  #   container_name: sonarr
+  #   ports:
+  #     - "8989:8989"
+  #   networks:
+  #     - appnet
+
+  idp:
+    build:
+      context: ..
+      dockerfile: Dockerfile.dev
+    container_name: idp
+    ports:
+      - "8080:8080"
+    networks:
+      - appnet
+    volumes:
+      - ../assets:/assets
+    env_file:
+      - ../.env
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      # - sonarr
+      - idp
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
