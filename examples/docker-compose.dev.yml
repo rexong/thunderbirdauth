@@ -1,11 +1,11 @@
 services:
-  # sonarr:
-  #   build: ./sonarr
-  #   container_name: sonarr
-  #   ports:
-  #     - "8989:8989"
-  #   networks:
-  #     - appnet
+  sonarr:
+    build: ./sonarr
+    container_name: sonarr
+    ports:
+      - "8989:8989"
+    networks:
+      - appnet
 
   idp:
     build:
@@ -27,7 +27,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      # - sonarr
+      - sonarr
       - idp
     networks:
       - appnet
