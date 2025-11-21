@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	auth "thunderbird.zap/idp/internal/auth/http"
+	"thunderbird.zap/idp/internal/auth/ldap"
 	"thunderbird.zap/idp/internal/configuration"
 	"thunderbird.zap/idp/internal/store"
 )
@@ -14,6 +15,7 @@ type application struct {
 	config         configuration.Config
 	store          store.Storage
 	sessionManager *auth.SessionManager
+	ldapManager    *ldap.LdapManager
 }
 
 func welcome(w http.ResponseWriter, _ *http.Request) {
