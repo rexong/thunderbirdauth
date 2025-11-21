@@ -13,8 +13,8 @@ type SessionManager struct {
 	mu       sync.RWMutex
 }
 
-func NewSessionManager() SessionManager {
-	return SessionManager{
+func NewSessionManager() *SessionManager {
+	return &SessionManager{
 		Sessions: make(map[string]time.Time),
 	}
 }

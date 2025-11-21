@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"github.com/go-playground/locales/ses"
 	"thunderbird.zap/idp/internal/auth/http"
 	"thunderbird.zap/idp/internal/configuration"
 	"thunderbird.zap/idp/internal/database"

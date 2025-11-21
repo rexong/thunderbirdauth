@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"thunderbird.zap/idp/internal/utils"
@@ -16,6 +17,8 @@ var ErrInvalidCredentials = errors.New("Invalid Credentials Provided")
 type templateData struct {
 	Error string
 }
+
+type EmptyData struct{}
 
 func newTemplateData(err error) templateData {
 	if err == nil {
@@ -54,13 +57,18 @@ func (a *application) storeUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err = a.store.Users.Create(username, password)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		log.Println("User Conflict")
+		w.WriteHeader(http.StatusConflict)
 		t.Execute(w, newTemplateData(err))
 		return
 	}
-
+	t, err = template.ParseFiles("./assets/templates/user.register.success.html")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Error: %v", err)
+	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "User Created!")
+	t.Execute(w, &EmptyData{})
 }
 
 func (a *application) loginUserHandlerFunc() http.HandlerFunc {

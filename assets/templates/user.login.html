@@ -20,7 +20,7 @@
     <div class="login-container">
         <h2>ThunderbirdAuth Login</h2>
         {{if .Error}}<p class="error">{{.Error}}</p>{{end}}
-        <form action="/users" method="POST">
+        <form method="POST">
             <label for="username">Username</label>
             <input type="text" id="username" name="username">
             <label for="password">Password</label>

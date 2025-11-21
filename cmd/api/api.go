@@ -13,7 +13,7 @@ import (
 type application struct {
 	config         configuration.Config
 	store          store.Storage
-	sessionManager auth.SessionManager
+	sessionManager *auth.SessionManager
 }
 
 func welcome(w http.ResponseWriter, _ *http.Request) {
