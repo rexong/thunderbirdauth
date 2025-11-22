@@ -20,20 +20,21 @@ func main() {
 	}
 	defer db.Close()
 
-	ldapManager, err := ldap.New(config.LdapConfig)
+	store := store.NewStorage(db)
+	sessionManager := http.NewSessionManager()
+
+	ldapManager, err := ldap.New(config.LdapConfig, store.Users)
 	if err != nil {
 		log.Fatalf("Unable to Start LDAP Server: %v", err)
 	}
 	defer ldapManager.Close()
-
-	store := store.NewStorage(db)
-	sessionManager := http.NewSessionManager()
 	app := &application{
 		config:         config,
 		store:          store,
 		sessionManager: sessionManager,
 		ldapManager:    ldapManager,
 	}
+
 	mux := app.mount()
 
 	if err := app.run(mux); err != nil {

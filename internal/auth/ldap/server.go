@@ -7,14 +7,22 @@ import (
 
 	"beryju.io/ldap"
 	"thunderbird.zap/idp/internal/configuration"
+	"thunderbird.zap/idp/internal/store"
 )
 
 type LdapManager struct {
 	listener *net.Listener
 	server   *ldap.Server
+	store    *LdapStore
 }
 
-func New(config configuration.LdapConfiguration) (*LdapManager, error) {
+type LdapStore struct {
+	bindUser         string
+	bindUserPassword string
+	users            store.UserStorer
+}
+
+func New(config configuration.LdapConfiguration, users store.UserStorer) (*LdapManager, error) {
 	if !config.ShouldStart() {
 		return &LdapManager{}, nil
 	}
@@ -22,9 +30,15 @@ func New(config configuration.LdapConfiguration) (*LdapManager, error) {
 	if err != nil {
 		return nil, err
 	}
+	bindUser, bindUserPassword := config.BindCredential()
+	store := LdapStore{
+		bindUser:         bindUser,
+		bindUserPassword: bindUserPassword,
+		users:            users,
+	}
 	server := ldap.NewServer()
-	// server.BindFunc("", store)
-	// server.SearchFunc("", store)
+	server.BindFunc("", store)
+	server.SearchFunc("", store)
 
 	go func() {
 		err = server.Serve(listener)
@@ -37,6 +51,7 @@ func New(config configuration.LdapConfiguration) (*LdapManager, error) {
 	return &LdapManager{
 		listener: &listener,
 		server:   server,
+		store:    &store,
 	}, nil
 }
 
