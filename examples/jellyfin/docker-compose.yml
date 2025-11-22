@@ -1,0 +1,14 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    ports:
+      - 8096:8096
+      - 1900:1900/udp
+    # volumes:
+    #   - ./config:/config
+    #   - ./cache:/cache
