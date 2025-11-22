@@ -17,7 +17,6 @@ func (s LdapStore) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPRe
 		return ldap.LDAPResultSuccess, nil
 	}
 	username, err := getUidValue(bindDN)
-	log.Printf("Username: %s", username)
 	if err != nil {
 		return ldap.LDAPResultInvalidDNSyntax, nil
 	}
@@ -26,7 +25,6 @@ func (s LdapStore) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPRe
 		return ldap.LDAPResultInvalidCredentials, nil
 	}
 
-	log.Println("User Verified")
 	return ldap.LDAPResultSuccess, nil
 }
 

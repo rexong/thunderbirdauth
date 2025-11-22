@@ -26,7 +26,7 @@ func (s LdapStore) Search(boundDN string, req ldap.SearchRequest, conn net.Conn)
 		return ldap.ServerSearchResult{ResultCode: ldap.LDAPResultSuccess}, nil
 	}
 	resultEntry := &ldap.Entry{
-		DN: fmt.Sprintf("uid=%s,cn=%s,%s", user.Username, user.Username, req.BaseDN),
+		DN: fmt.Sprintf("uid=%s,%s", user.Username, req.BaseDN),
 		Attributes: []*ldap.EntryAttribute{
 			{Name: "uid", Values: []string{user.Username}},
 		},
