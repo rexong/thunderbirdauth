@@ -17,9 +17,24 @@ type LdapManager struct {
 }
 
 type LdapStore struct {
-	bindUser         string
-	bindUserPassword string
-	users            store.UserStorer
+	bindUser *BindUser
+	users    store.UserStorer
+}
+
+type BindUser struct {
+	bindDn       string
+	bindPassword string
+}
+
+func newBindUser(dn, password string) *BindUser {
+	return &BindUser{
+		bindDn:       dn,
+		bindPassword: password,
+	}
+}
+
+func (b *BindUser) verify(dn, password string) bool {
+	return b.bindDn == dn && b.bindPassword == password
 }
 
 func New(config configuration.LdapConfiguration, users store.UserStorer) (*LdapManager, error) {
@@ -30,11 +45,10 @@ func New(config configuration.LdapConfiguration, users store.UserStorer) (*LdapM
 	if err != nil {
 		return nil, err
 	}
-	bindUser, bindUserPassword := config.BindCredential()
+	bindUser := newBindUser(config.BindCredential())
 	store := LdapStore{
-		bindUser:         bindUser,
-		bindUserPassword: bindUserPassword,
-		users:            users,
+		bindUser: bindUser,
+		users:    users,
 	}
 	server := ldap.NewServer()
 	server.BindFunc("", store)

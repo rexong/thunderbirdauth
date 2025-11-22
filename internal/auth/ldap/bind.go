@@ -11,13 +11,9 @@ import (
 
 var ErrUidNotFound = errors.New("Unable to find UID")
 
-func (s LdapStore) canBind(bindDn, bindSimplePw string) bool {
-	return s.bindUser == bindDn && s.bindUserPassword == bindSimplePw
-}
-
 func (s LdapStore) Bind(bindDN, bindSimplePw string, conn net.Conn) (ldap.LDAPResultCode, error) {
 	log.Printf("LDAP Bind request: DN=%s, PW=%s", bindDN, bindSimplePw)
-	if s.canBind(bindDN, bindSimplePw) {
+	if s.bindUser.verify(bindDN, bindSimplePw) {
 		return ldap.LDAPResultSuccess, nil
 	}
 	username, err := getUidValue(bindDN)
