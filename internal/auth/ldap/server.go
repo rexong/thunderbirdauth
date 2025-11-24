@@ -38,9 +38,6 @@ func (b *BindUser) verify(dn, password string) bool {
 }
 
 func New(config configuration.LdapConfiguration, users store.UserStorer) (*LdapManager, error) {
-	if !config.ShouldStart() {
-		return &LdapManager{}, nil
-	}
 	listener, err := net.Listen("tcp", config.ListenAddr())
 	if err != nil {
 		return nil, err

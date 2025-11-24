@@ -11,23 +11,36 @@ import (
 )
 
 func main() {
+	log.Println("Starting Server...")
+	log.Println("Initialising Configuration...")
 	config := configuration.Init()
+	log.Println("Configuration Initialised.")
 
+	log.Println("Initialising Database...")
 	dbAddr := config.AppConfig.DbPath()
 	db, err := database.NewSqlite(dbAddr)
 	if err != nil {
 		log.Fatalf("Unable to Secure Database Connection: %v", err)
 	}
 	defer db.Close()
-
 	store := store.NewStorage(db)
-	sessionManager := http.NewSessionManager()
+	log.Println("Database Initialised.")
 
-	ldapManager, err := ldap.New(config.LdapConfig, store.Users)
-	if err != nil {
-		log.Fatalf("Unable to Start LDAP Server: %v", err)
+	log.Println("Initialising Session Manager...")
+	sessionManager := http.NewSessionManager()
+	log.Println("Session Manager Initialised.")
+
+	var ldapManager *ldap.LdapManager
+	if config.LdapConfig.ShouldStart() {
+		log.Println("Initialising LDAP Server...")
+		ldapManager, err = ldap.New(config.LdapConfig, store.Users)
+		if err != nil {
+			log.Fatalf("Unable to Start LDAP Server: %v", err)
+		}
+		defer ldapManager.Close()
+		log.Println("LDAP Server Initialised.")
 	}
-	defer ldapManager.Close()
+
 	app := &application{
 		config:         config,
 		store:          store,
