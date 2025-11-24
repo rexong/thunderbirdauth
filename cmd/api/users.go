@@ -29,17 +29,18 @@ func newTemplateData(err error) templateData {
 
 func GetPageHandlerFunc(htmlPath string) http.HandlerFunc {
 	return func(w http.ResponseWriter, _ *http.Request) {
+		log.Printf("GET %s", htmlPath)
 		t, err := template.ParseFiles(htmlPath)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Fprintf(w, "Error: %v", err)
 		}
 		t.Execute(w, newTemplateData(nil))
+		log.Printf("GET %s %d", htmlPath, http.StatusOK)
 	}
 }
 
 func (a *application) createUserHandlerFunc() http.HandlerFunc {
-	log.Println("GET User Register Page")
 	return GetPageHandlerFunc("./assets/templates/user.register.html")
 }
 
@@ -81,7 +82,6 @@ func (a *application) storeUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *application) loginUserHandlerFunc() http.HandlerFunc {
-	log.Println("GET User Login Page")
 	return GetPageHandlerFunc("./assets/templates/user.login.html")
 }
 
