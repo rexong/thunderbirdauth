@@ -50,6 +50,7 @@ func main() {
 
 	mux := app.mount()
 
+	log.Println("Server is up and listening to ", config.AppConfig.Addr())
 	if err := app.run(mux); err != nil {
 		log.Fatal("Unable to Start Server")
 	}
