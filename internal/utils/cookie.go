@@ -7,11 +7,12 @@ import (
 
 const CookieName = "thunderbirdauth_session_id"
 
-func CreateCookies(value string, expiry time.Time) *http.Cookie {
+func CreateCookies(value string, expiry time.Time, cookieDomain string) *http.Cookie {
 	cookie := &http.Cookie{
 		Name:     CookieName,
 		Value:    value,
 		Path:     "/",
+		Domain:   cookieDomain,
 		Expires:  expiry,
 		HttpOnly: true,
 		Secure:   false,

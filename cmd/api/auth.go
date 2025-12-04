@@ -12,7 +12,7 @@ import (
 func (a *application) Authenticate(withBasic bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Authenticating.... Basic Status: %t", withBasic)
-		log.Println("Fetching Cookie...")
+		log.Printf("Fetching Cookie %s...", utils.CookieName)
 		cookie, err := r.Cookie(utils.CookieName)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
